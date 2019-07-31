@@ -1,0 +1,115 @@
+# Data input
+import sys
+datafile = sys.argv[1]
+f = open(datafile, 'r')
+data = []
+i = 0
+l = f.readline()
+while l is not '':
+    a = l.split()
+    l2 = []
+    for j in range(0, len(a), 1):
+        l2.append(float(a[j]))
+    data.append(l2)
+    l = f.readline()
+rows = len(data)
+cols = len(data[0])
+
+# test lbl
+traininglabel = sys.argv[2]
+f = open(traininglabel, 'r')
+trainlable = {}
+l = f.readline()
+while l is not '':
+    a = l.split()
+    trainlable[int(a[1])] = int(a[0])
+    l = f.readline()
+t0 = []
+t1 = []
+for key, value in trainlable.items():
+    if value is 0:
+        t0.insert(len(t0), data[key])
+    elif value is 1:
+        t1.insert(len(t1), data[key])
+
+
+# Mean
+m0 = []
+m1 = []
+
+# Mean for t0
+for count in range(len(t0[0])):
+    temp = [lst[count] for lst in t0]
+    m0.insert(len(m0), sum(temp)/len(temp))
+
+# Mean for t1
+for count in range(len(t1[0])):
+    temp = [lst[count] for lst in t1]
+    m1.insert(len(m1), sum(temp)/len(temp))
+
+# Standard Deviation
+s0 = []
+s1 = []
+
+# SD for t0
+for i in range(len(t0[0])):
+    temp = [(lst[i] - m0[i]) ** 2 for lst in t0]
+    ssd = sum(temp)
+    var = ssd/len(temp)
+    if var == 0:
+        var = 1
+        sd = var ** 0.5
+        s0.insert(len(s0), sd)
+    else:
+        sd = var ** 0.5
+        s0.insert(len(s0), sd)
+
+# SD for t1
+for i in range(len(t1[0])):
+    temp = [(lst[i] - m1[i]) ** 2 for lst in t1]
+    ssd = sum(temp)
+    var = ssd/len(temp)
+    if var == 0:
+        var = 1
+        sd = var ** 0.5
+        s1.insert(len(s1), sd)
+    else:
+        sd = var ** 0.5
+        s1.insert(len(s1), sd)
+
+# Test Data
+keylst = list(trainlable.keys())
+testdata=[]
+predictedLabels = []
+for i in range(0,len(data)):
+    a=[]
+    if(i not in keylst):
+        a.append(i)
+        testdata.append(data[i])
+        predictedLabels.append(a)
+
+# Naive Bayes
+predlbl = {}
+bayes0 = []
+bayes1 = []
+
+for data in testdata:
+    n0 = 0
+    n1 = 0
+    for col in range(len(testdata[0])):
+        n0 += ((data[col] - m0[col]) / s0[col]) ** 2
+        n1 += ((data[col] - m1[col]) / s1[col]) ** 2
+    bayes0.insert(len(bayes0), n0)
+    bayes1.insert(len(bayes1), n1)
+
+flist = [item for tstlst in predictedLabels for item in tstlst]
+
+i = 0
+for row in flist:
+    if bayes0[i] < bayes1[i]:
+        predlbl[row] = 0
+    else:
+        predlbl[row] = 1
+    i += 1
+	
+print(predlbl)
