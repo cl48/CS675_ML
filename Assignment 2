@@ -1,0 +1,99 @@
+import sys
+import random
+import math
+
+datafile = sys.argv[1]
+f = open(datafile, 'r')
+data = []
+# i = 0
+l = f.readline()
+
+# Read data
+while (l != ''):
+    a = l.split()
+    l2 = []
+    for j in range(0, len(a), 1):
+        l2.append(float(a[j]))
+    l2.append(float(1))
+    data.append(l2)
+    l = f.readline()
+rows = len(data)
+cols = len(data[0])
+f.close()
+
+# Train labels
+labelfile = sys.argv[2]
+f = open(labelfile)
+trainlabels = {}
+n = [0, 0]
+l = f.readline()
+while (l != ''):
+    a = l.split()
+    trainlabels[a[1]] = int(a[0])
+    if (trainlabels[a[1]] == 0):
+        trainlabels[a[1]] = -1;
+    l = f.readline()
+    n[int(a[0])] += 1
+f.close()
+
+# Init w
+w = []
+for j in range(0, cols, 1):
+    w.append(0.02 * random.random() - 0.01)
+
+# Dot Product
+def dot_prod(a, b):
+    dp = 0
+    for i in range(0, cols, 1):
+        dp += a[i] * b[i]
+    return dp
+
+# Gradient Descent
+
+eta = 0.001
+err = rows + 10
+stp = 1
+cnt = 0
+while ((stp) > 0.001):
+    hkl = []
+    for m in range(0, cols, 1):
+        hkl.append(0)
+    for j in range(0, rows, 1):
+        if (trainlabels.get(str(j)) != None):
+            dp = dot_prod(w, data[j])
+            for k in range(0, cols, 1):
+                hkl[k] += (trainlabels.get(str(j)) - dp) * data[j][k]
+# Update w
+    for j in range(0, cols, 1):
+        w[j] = w[j] + eta * hkl[j]
+# Error
+    prev = err
+    err = 0
+    for j in range(0, rows, 1):
+        if (trainlabels.get(str(j)) != None):
+            err += (trainlabels.get(str(j)) - dot_prod(w, data[j])) ** 2
+    if (prev > err):
+        stp = prev - err
+    else:
+        stp = err - prev
+    cnt = cnt + 1
+    
+normal_w = 0
+for i in range(0, (cols - 1), 1):
+    normal_w += w[i] ** 2
+print ("w =", w[0:2])
+
+normal_w = math.sqrt(normal_w)
+
+origin = abs(w[len(w) - 1] / normal_w)
+
+print ("Distance of plane to origin = abs(w0/||w||) = " + str(origin))
+
+# Prediction
+for i in range(0, rows, 1):
+    if (trainlabels.get(str(i)) == None):
+        dp = dot_prod(w, data[i])
+        if (dp > 0):
+            print("1 " + str(i))
+        else:
+            print("0 " + str(i))
