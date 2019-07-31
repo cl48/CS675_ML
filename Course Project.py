@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
 import sys
 import array
 import copy
@@ -78,7 +72,7 @@ def pearson_correlation(x, y, fi):
 
 
 # Read data file
-data_file = "C:/Users/Visitor/CS 675/traindata"
+data_file = sys.argv[1]
 data = []
 with open(data_file, "r") as file:
     for line in file:
@@ -89,7 +83,7 @@ with open(data_file, "r") as file:
         data.append(l)
 
 # Read labels from file
-labels = "C:/Users/Visitor/CS 675/test labels.txt"
+labels = sys.argv[2]
 trainlabels = array.array("i")
 with open(labels, "r") as file:
     for line in file:
@@ -170,7 +164,7 @@ accur = c / k
 print("\nAccuracy: ", accur * 100)
 
 # Read Test
-testfile = "C:/Users/Visitor/CS 675/testdata"
+testfile = sys.argv[3]
 testdata = []
 with open(testfile, "r") as file:
     for line in file:
@@ -182,20 +176,15 @@ with open(testfile, "r") as file:
 deep_copy = copy.deepcopy(all_features)
 updated_test_data = data_set(deep_copy, testdata)
 
-# create a file
-predlbl = open("C:/Users/Visitor/CS 675/predlbls", "w+")
+# create a predicted labels file
+predlbl = open("predlbls", "w+")
 for i in range(0, len(updated_test_data), 1):
     a_labl = int(svc.predict([updated_test_data[i]]))
     predlbl.write(str(a_labl) + " " + str(i) + "\n")
     
 # create feature file
-with open('C:/Users/Visitor/CS 675/feature', 'w+') as f:
+with open('feature', 'w+') as f:
     for item in all_features:
         f.write("%s\n" % item)
-
-
-# In[ ]:
-
-
 
 
