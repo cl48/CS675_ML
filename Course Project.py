@@ -90,6 +90,7 @@ with open(labels, "r") as file:
         s = line.split()
         trainlabels.append(int(s[0]))
 
+# Number feature
 feature_count = 8
 rows = len(data)
 cols = len(data[0])
@@ -176,7 +177,7 @@ with open(testfile, "r") as file:
 deep_copy = copy.deepcopy(all_features)
 updated_test_data = data_set(deep_copy, testdata)
 
-# create a predicted labels file
+# create a file
 predlbl = open("predlbls", "w+")
 for i in range(0, len(updated_test_data), 1):
     a_labl = int(svc.predict([updated_test_data[i]]))
@@ -186,5 +187,3 @@ for i in range(0, len(updated_test_data), 1):
 with open('feature', 'w+') as f:
     for item in all_features:
         f.write("%s\n" % item)
-
-
